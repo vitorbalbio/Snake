@@ -1,8 +1,13 @@
 ﻿// Nota:
-// Por conta da simplicidade do projeto essa classe ficou subutilizada
-// Mas em projetos reais sempre que posso utilizo um ou mais UI Managers como este para centralizar
-// chamadas da UI (Eventualmente um por tela) e ativar eventos em outras entidades da UI.
-// Isso me permite separar melhor o VIEW do CONTROLLER
+// Sempre que posso utilizo um ou mais UI Managers como este para centralizar
+// chamadas da UI (Eventualmente até Um por tela/Painel) 
+// e para ativar eventos em entidades da UI.
+// Isso me permite separar melhor o "VIEW" do "CONTROLLER"
+
+// Costumo evitar o uso de Listeners e Delegates e verificações constantes no Update 
+// para atualizar componentes da UI como vida/score/pontuação etc..
+// preferindo a atualização por eventos quando eles ocorrem para 
+// diminuir esse tipo de verificação ou chamadas.
 
 
 using System.Collections;
@@ -23,6 +28,8 @@ public class Controller_UIManager : MonoBehaviour
     public static Controller_UIManager uiManager;
 
     public void Awake() {
+
+        // Singleton
         uiManager = this;
     }
 
@@ -36,6 +43,7 @@ public class Controller_UIManager : MonoBehaviour
     public void GoToInGame() {
         mainMenuPanel.SetActive(false);
         inGamePanel.SetActive(true);
+        UpdateCurrentScore(0);
     }
 
     // Eventos da UI
@@ -43,15 +51,19 @@ public class Controller_UIManager : MonoBehaviour
     public void StartGame_Click() {
         GoToInGame();
         Controller_GameManager.main.StartGame();
+        
         // Outros eventos e animações vão aqui
     }
 
     // Elementos da UI
+
+    // Atualiza o Best Score
     public void UpdateBestScore(int _score) {
         // Atualiza o Placar
         score.text = _score.ToString();
     }
 
+    // Atualiza o Score Corrente
     public void UpdateCurrentScore(int _score) {
         inGameScore.text = _score.ToString();
     }

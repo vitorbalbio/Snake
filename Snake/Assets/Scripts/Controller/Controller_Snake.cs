@@ -13,8 +13,7 @@ public class Controller_Snake : MonoBehaviour
     private DirectionType currentDirection = DirectionType.Right;
 
     private enum CollisionType {None,Self,Board,Item}
-
-    [SerializeField]  private Vector2 lastEndPosition;
+    private Vector2 lastEndPosition;
 
     private bool canChangeDirection = true;
 
@@ -29,8 +28,6 @@ public class Controller_Snake : MonoBehaviour
 
         // Verifica colisões e Eventos
         CheckCollisions();
-
-        // Reseta holders;
         canChangeDirection = true;
     }
 
@@ -62,6 +59,7 @@ public class Controller_Snake : MonoBehaviour
         return;
     }
 
+    // Aumenta o Snake
     public void IncreaseSnake() {
         // Cria e instancia um novo segmento
         Model_Element tempElement = new Model_Element();
@@ -76,6 +74,7 @@ public class Controller_Snake : MonoBehaviour
         elements.Add(tempElement);
     }
 
+    // Atualiza posições do corpo
     private void MoveBody() {
         // Atualiza outros Elementos, precisa percorrer de baixo para cima
         for (int i = elements.Count-1; i >= 1; i--) {
@@ -87,10 +86,8 @@ public class Controller_Snake : MonoBehaviour
         }
     }
 
+    // Atualiza posição do Head
     private void MoveHead() {
-
-        // Se só tem o Head então ele é a ultima posição
-        //if (elements.Count == 1) {lastEndPosition = elements[0].Position;}
 
         // Atualiza a posição conforme a direção
         switch (currentDirection){
@@ -119,15 +116,15 @@ public class Controller_Snake : MonoBehaviour
 
         // ## Nota:
         // Por conta da simplicidade do projeto seria pedante separar um Manager de Inputs
-        // apenas para realizar essas verificações simples, mas dependendo da complexidade pode ser
-        // interessante separar melhor essa camada de VIEW do CONTROLLER e se aproximar mais
+        // apenas para realizar essas verificações, mas dependendo da complexidade pode ser
+        // interessante separar melhor essa camada de "VIEW" do "CONTROLLER" e se aproximar mais
         // de um MVC tradicional principalmente quando um mesmo input ativa multiplos eventos
         // e precisa ser selecionado por contexto.
 
         // Previne que mais de uma mudança de direção seja feita por GameLoop
+        // e Impede rotações maiores que 90º
         if (!canChangeDirection) { return; }
 
-        // Realiza uma verificação para impedir rotações maiores que 90º
         if (Input.GetKeyDown(KeyCode.UpArrow) && currentDirection != DirectionType.Down) {
             currentDirection = DirectionType.Up;
             canChangeDirection = false;

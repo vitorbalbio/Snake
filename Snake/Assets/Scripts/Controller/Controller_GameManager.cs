@@ -18,15 +18,15 @@ public class Controller_GameManager : MonoBehaviour
     [SerializeField] private GameObject itemPrefab;
 
     // Cache de componentes críticos (Evita o overhead por GetComponent)
-    public Controller_Item item;
-    public Controller_Snake snake;
+    [HideInInspector] public Controller_Item item;
+    [HideInInspector] public Controller_Snake snake;
 
     // PlaceHolder para manter outros elementos da cena
     public Transform Scene;
 
     // Game States
     public enum GameState {Menu,Play};
-    public GameState gameState;
+    [HideInInspector] public GameState gameState;
 
     // Dados de Persistência e Score
     private int bestScore;
@@ -37,15 +37,15 @@ public class Controller_GameManager : MonoBehaviour
     private float gameSpeed = 3;
     private int frameCount;
 
-    // Singleton
-    public static Controller_GameManager main;
-
     // Constantes
     public const int BOARDSIZE = 10;
 
+    // Singleton
+    public static Controller_GameManager main;
+
     private void Awake() {
         // Nota:
-        // Uso Singletons nos Gerenciadores de hierarquia mais alta no game
+        // Costumo usar Singletons nos Gerenciadores de hierarquia mais alta no game
         // por exemplo nos "Level Managers", "Game Managers", "UI Managers" etc
         // Isso facilita o acesso e a verificação de estados globais do game por entidades
         // de menor hierarquia e diminui a necessidade de delegates/actions melhorando 
@@ -111,6 +111,7 @@ public class Controller_GameManager : MonoBehaviour
 
         // Reseta Variávies da Sessão
         gameSpeed = 3;
+        currentScore = 0;
 
         // Instancia e Inicializa o Snake
         GameObject snakeTmp = GameObject.Instantiate(snakePrefab);
@@ -151,18 +152,18 @@ public class Controller_GameManager : MonoBehaviour
     // Eventos
 
     // Nota:
-    // Geralmente faço a comunicação de eventos globais que afetam várias entidades de forma
-    // centralizada em managers (da Cena, ou de Game caso seja mt simples).
+    // Geralmente faço a comunicação de eventos que afetam várias entidades de forma
+    // centralizada em Game/Scene Managers.
     // Isso facilita a leitura do código já que com algumas dezenas de entidades
     // comunicando entre si fica mais difícil entender a cadeia de mensagens.
 
     // Eventos globais que ocorrem quando um item é consumido
     public void EventItemCollided() {
-        // Aumenta a velocidade
+        // Aumenta a velocidade da sessão
         gameSpeed += 0.1f;
 
         // Reposiciona o item
-        // Não é necessário Destruir/Criar o item como no briefing, apenas reposicionar.
+        // Não é necessário Destruir/Criar o item como no briefing enviado, apenas reposicionar.
         item.SetPosition(GetUniquePosition());
 
         // Adiciona Pontuação
