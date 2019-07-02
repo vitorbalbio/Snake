@@ -37,8 +37,8 @@ public class Controller_Snake : MonoBehaviour
 
         // Colisão com Item
         if(head.Position == Controller_GameManager.main.item.Position) {
-            Controller_GameManager.main.EventItemCollided();
             IncreaseSnake();
+            Controller_GameManager.main.EventItemCollided();
         }
 
         // Colisão consigo mesmo
