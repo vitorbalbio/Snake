@@ -6,7 +6,7 @@ public class Controller_Snake : MonoBehaviour
 {
     [SerializeField] private GameObject bodyPrefab;
 
-    // Inicializado com o Head pelo Inspector
+    // Inicializado com o Head no Prefab
     [SerializeField] private List<Model_Element> elements; 
 
     private enum DirectionType {Up,Down,Left,Right};
@@ -17,7 +17,6 @@ public class Controller_Snake : MonoBehaviour
     [SerializeField]  private Vector2 lastEndPosition;
 
     private bool canChangeDirection = true;
-
 
     // Atualiza Snake. 
     // Chamado pelo GameManager Main Loop.
@@ -118,7 +117,7 @@ public class Controller_Snake : MonoBehaviour
 
     public void Update() {
 
-        // ## Nota Para Avaliadores Técnicos: 
+        // ## Nota:
         // Por conta da simplicidade do projeto seria pedante separar um Manager de Inputs
         // apenas para realizar essas verificações simples, mas dependendo da complexidade pode ser
         // interessante separar melhor essa camada de VIEW do CONTROLLER e se aproximar mais
@@ -149,7 +148,6 @@ public class Controller_Snake : MonoBehaviour
             canChangeDirection = false;
             return;
         }
-
     }
 
     // Outras Funções e Utilities

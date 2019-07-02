@@ -2,7 +2,7 @@
 // Costumo estruturar meus projetos com prefixos que identifiquem a função do script.
 // Utilizo "Controller_" para Mono Behaviors que exercem função de modelar e 
 // controlar outras entidades (Managers) ou si próprio seguindo o pattern
-// "Entidade-Componente" da Unity porém tendo em vista a manter o MVC quando possível.
+// "Entidade-Componente" da Unity porém tendo em vista a manter o MVC o quanto possível.
 
 using System.Linq;
 using System.Collections;
@@ -28,14 +28,13 @@ public class Controller_GameManager : MonoBehaviour
     public enum GameState {Menu,Play};
     public GameState gameState;
 
-    // Dados de Persistência
-    public int bestScore;
+    // Dados de Persistência e Score
+    private int bestScore;
     public int BestScore { get => bestScore; set => bestScore = value; }
-
     private int currentScore;
 
     // Controle de Temporização
-    [SerializeField] private float gameSpeed;
+    private float gameSpeed = 3;
     private int frameCount;
 
     // Singleton
@@ -49,13 +48,15 @@ public class Controller_GameManager : MonoBehaviour
         // Uso Singletons nos Gerenciadores de hierarquia mais alta no game
         // por exemplo nos "Level Managers", "Game Managers", "UI Managers" etc
         // Isso facilita o acesso e a verificação de estados globais do game por entidades
-        // de menor hierarquia e diminui o uso de delegates/actions melhorando 
+        // de menor hierarquia e diminui a necessidade de delegates/actions melhorando 
         // a legibilidade do código.
 
         // Nesses casos a Unicidade da classe é garantida pela estrutura do projeto 
         // então a declaração é direta.
         main = this;
 
+        // Carregar dados da Persistência no Awake de um Manager de Alta Hierarquia
+        // garante que os dados estarão disponíveis para todos os outros objetos no "Start()"
         LoadPersitence(); 
     }
 
@@ -63,7 +64,7 @@ public class Controller_GameManager : MonoBehaviour
     private void Start() {
         
         // Inicializa Outros Managers
-        Controller_UIManager.uiManager.ShowMainMenu(BestScore);
+        Controller_UIManager.uiManager.GoToMainMenu(BestScore);
     }
 
 
@@ -108,6 +109,9 @@ public class Controller_GameManager : MonoBehaviour
 
         gameState = GameState.Play;
 
+        // Reseta Variávies da Sessão
+        gameSpeed = 3;
+
         // Instancia e Inicializa o Snake
         GameObject snakeTmp = GameObject.Instantiate(snakePrefab);
         snake = snakeTmp.GetComponent<Controller_Snake>(); // Cache do componente principal
@@ -136,7 +140,7 @@ public class Controller_GameManager : MonoBehaviour
         SaveScore();
 
         // Volta a mostrar o menu principal
-        Controller_UIManager.uiManager.ShowMainMenu(BestScore);
+        Controller_UIManager.uiManager.GoToMainMenu(BestScore);
     }
 
     // Substitui o "Update()" como loop principal do game.
@@ -144,26 +148,30 @@ public class Controller_GameManager : MonoBehaviour
         snake.UpdateSnake();
     }
 
-    // Eventos Globais
-    
+    // Eventos
+
     // Nota:
-    // Geralmente faço a comunicação de eventos que afetam várias entidades de forma
-    // centralizada em managers (de Cena, ou de Game). Isso facilita a leitura do código
-    // já que com algumas dezenas de entidades comunicando entre si fica mais difícil
-    // entender a cadeia de mensagens.
+    // Geralmente faço a comunicação de eventos globais que afetam várias entidades de forma
+    // centralizada em managers (da Cena, ou de Game caso seja mt simples).
+    // Isso facilita a leitura do código já que com algumas dezenas de entidades
+    // comunicando entre si fica mais difícil entender a cadeia de mensagens.
 
     // Eventos globais que ocorrem quando um item é consumido
     public void EventItemCollided() {
         // Aumenta a velocidade
         gameSpeed += 0.1f;
 
-        //  Reposiciona o item
+        // Reposiciona o item
+        // Não é necessário Destruir/Criar o item como no briefing, apenas reposicionar.
         item.SetPosition(GetUniquePosition());
 
         // Adiciona Pontuação
         currentScore++;
 
-        // Aqui poderiam entrar outros eventos como efeitos de particulas, animações etc...
+        // Atualiza a UI
+        Controller_UIManager.uiManager.UpdateCurrentScore(currentScore);
+
+        // Aqui poderiam entrar outros eventos como efeitos de particulas, sons, animações etc...
 
     }
 
